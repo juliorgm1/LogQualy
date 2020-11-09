@@ -1,7 +1,9 @@
 package com.example.logqualy.model;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class Product implements Serializable {
@@ -15,9 +17,12 @@ public class Product implements Serializable {
     }
 
     public Product(String nameProduct, String descriptionProduct) {
+        Locale BRAZIL = new Locale("pt","BR");
         this.nameProduct = nameProduct;
         this.descriptionProduct = descriptionProduct;
-        this.date = String.valueOf(Calendar.getInstance().getTime());
+        this.date = DateFormat.getDateInstance(DateFormat.MEDIUM, BRAZIL).format(
+                Calendar.getInstance().getTime()
+        );
     }
 
     public String getId() {

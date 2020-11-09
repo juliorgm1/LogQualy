@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.logqualy.model.Product;
 import com.example.logqualy.ui.recyclerview.adapter.ProductAdapter;
@@ -119,25 +120,19 @@ public class ProductListActivity extends AppCompatActivity {
 
                 mStorageRef = FirebaseStorage.getInstance().getReference();
 
-                StorageReference riversRef = mStorageRef.child("/img/"+product.getNameProduct()+".jpg");
-
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bmp1.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] img = baos.toByteArray();
 
-                UploadTask uploadTask = riversRef.putBytes(img);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        Log.d("deu bom","deu bom");
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                mStorageRef.child("gs://logqualy-ba3dd.appspot.com/img/"+product.getNameProduct()+".jpg").putBytes(img).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                        // ...
-                        Log.d("deu ruim","deu ruim");
+                        Toast.makeText(getApplicationContext(),"deu certo",Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(),"não deu certo",Toast.LENGTH_SHORT).show();
                     }
                 });
                 db.collection(PRODUCTS_COLLECTION).add(product);

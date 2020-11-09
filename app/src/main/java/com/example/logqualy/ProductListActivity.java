@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +35,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,15 +49,17 @@ public class ProductListActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 1;
     public static final int REQUEST_EDIT_PRODUCT = 2;
     public static final String PRODUCTS_COLLECTION = "products";
-    public static final String TAG = "SAVE_PRODUCT";
+
     public static final String EXTRA_EDIT_PRODUCT = "editProduct";
+
+    public static final String TAG = "SAVE_PRODUCT";
     private FirebaseUser user;
     private FloatingActionButton fabFormProduct;
     private FirebaseFirestore db;
     private List<Product> productList;
     private RecyclerView productRecyclerview;
     private ProductAdapter adapter;
-
+    private StorageReference mStorageRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +114,35 @@ public class ProductListActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE && data.hasExtra(FormProductActivity.PRODUCT_SAVE)){
             if (resultCode == Activity.RESULT_OK){
                 Product product = (Product) data.getSerializableExtra(FormProductActivity.PRODUCT_SAVE);
+                byte[] byteArray1 = data.getByteArrayExtra("imagem");
+                Bitmap bmp1 = BitmapFactory.decodeByteArray(byteArray1, 0, byteArray1.length);
+
+                mStorageRef = FirebaseStorage.getInstance().getReference();
+
+                StorageReference riversRef = mStorageRef.child("/img/"+product.getNameProduct()+".jpg");
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bmp1.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] img = baos.toByteArray();
+
+                UploadTask uploadTask = riversRef.putBytes(img);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Log.d("deu bom","deu bom");
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                        // ...
+                        Log.d("deu ruim","deu ruim");
+                    }
+                });
                 db.collection(PRODUCTS_COLLECTION).add(product);
+
+
                 loadData();
             }
         }

@@ -5,20 +5,28 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.logqualy.model.Product;
+
+import java.io.ByteArrayOutputStream;
 
 public class FormProductActivity extends AppCompatActivity {
 
     public static final String PRODUCT_SAVE = "PRODUCT_SAVE";
     public static final String PRODUCT_EDIT = "PRODUCT_EDIT";
+
     private EditText mEditTextNameProduct;
     private EditText mEditTextDescriptionProduct;
     private EditText mEditTextDate;
@@ -26,6 +34,7 @@ public class FormProductActivity extends AppCompatActivity {
     private Button mButtonSave;
     private Intent intent;
     private Product product;
+    private byte[] imageInByte;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +83,22 @@ public class FormProductActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mImageViewPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "asdf",
+                        Toast.LENGTH_SHORT).show();
+                dispatchTakePictureIntent();
+            }
+        });
     }
 
     private void goToProductListActivity(String saveOrEditExtra) {
         Intent intent = new Intent(FormProductActivity.this,
                         ProductListActivity.class);
+
+        intent.putExtra("imagem",imageInByte);
         intent.putExtra(saveOrEditExtra, product);
         setResult(Activity.RESULT_OK, intent);
         finish();
@@ -87,7 +107,6 @@ public class FormProductActivity extends AppCompatActivity {
     private void updateProductFromForm() {
         String nameProduct = mEditTextNameProduct.getText().toString();
         String descriptionProduct = mEditTextDescriptionProduct.getText().toString();
-
         product.setNameProduct(nameProduct);
         product.setDescriptionProduct(descriptionProduct);
     }
@@ -99,7 +118,10 @@ public class FormProductActivity extends AppCompatActivity {
             String date = mEditTextDate.getText().toString();
             String photoProduct = "adress image";
 
-            product = new Product(nameProduct, descriptionProduct, date, photoProduct);
+            Drawable drawable = mImageViewPhoto.getDrawable();
+            Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+
+            product = new Product(nameProduct, descriptionProduct);
         }
     }
 
@@ -125,5 +147,27 @@ public class FormProductActivity extends AppCompatActivity {
         mEditTextDate =  findViewById(R.id.editTextDate);
         mImageViewPhoto =  findViewById(R.id.imageViewPhotoProduct);
         mButtonSave =  findViewById(R.id.btnSaveProduct);
+    }
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageViewPhoto.setImageBitmap(imageBitmap);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            imageInByte = stream.toByteArray();
+        }
     }
 }

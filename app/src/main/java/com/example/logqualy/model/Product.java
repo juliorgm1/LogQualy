@@ -1,6 +1,8 @@
 package com.example.logqualy.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class Product implements Serializable {
     private String id;
@@ -12,11 +14,10 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(String nameProduct, String descriptionProduct, String date, String photoProduct) {
+    public Product(String nameProduct, String descriptionProduct) {
         this.nameProduct = nameProduct;
         this.descriptionProduct = descriptionProduct;
-        this.date = date;
-        this.photoProduct = photoProduct;
+        this.date = String.valueOf(Calendar.getInstance().getTime());
     }
 
     public String getId() {
@@ -32,7 +33,7 @@ public class Product implements Serializable {
     }
 
     public String getDate() {
-        return date;
+        return String.valueOf(date);
     }
 
     public String getPhotoProduct() {

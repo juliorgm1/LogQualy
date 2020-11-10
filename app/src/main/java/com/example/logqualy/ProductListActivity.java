@@ -114,11 +114,19 @@ public class ProductListActivity extends AppCompatActivity {
         if (data == null) return;
         if (requestCode == REQUEST_CODE && data.hasExtra(FormProductActivity.PRODUCT_SAVE)){
             if (resultCode == Activity.RESULT_OK){
+                //Recuperando o objeto product que veio do formulário
                 Product product = (Product) data.getSerializableExtra(FormProductActivity.PRODUCT_SAVE);
+                //Recuperando a imagem que veio da ativity do formulário
                 byte[] byteArray1 = data.getByteArrayExtra(FormProductActivity.EXTRA_IMAGE_PATH);
 
+                //Utiliando UUID para criar um nome para o arvivo
                 final String nameFile = UUID.randomUUID().toString();
+
+                //Criando uma referencia para o local onde a imagem será salva no storage
                 mStorageRef = FirebaseStorage.getInstance().getReference().child("image/"+ nameFile);
+
+                //O metodo putBytes enviará a imagem para o servidor
+                //Caso o envio dê certo produto será cadastrado no Firestore
                 mStorageRef.putBytes(byteArray1).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -127,7 +135,6 @@ public class ProductListActivity extends AppCompatActivity {
                         loadData();
                     }
                 });
-
             }
         }
 

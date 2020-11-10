@@ -104,8 +104,10 @@ public class FormProductActivity extends AppCompatActivity {
     private void goToProductListActivity(String saveOrEditExtra) {
         Intent intent = new Intent(FormProductActivity.this,
                         ProductListActivity.class);
-
+        //Esse extra envia a imagem para tela de lista de produtos
         intent.putExtra(EXTRA_IMAGE_PATH,imageInByte);
+
+        //Esse extra envia um objeto Product para tela de lista de produtos
         intent.putExtra(saveOrEditExtra, product);
         setResult(Activity.RESULT_OK, intent);
         finish();
@@ -157,8 +159,10 @@ public class FormProductActivity extends AppCompatActivity {
         mButtonSave =  findViewById(R.id.btnSaveProduct);
     }
 
+    //Código de requisição da camera
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    //Esse metodo criar e starta uma intent para abrir o App de camera do celular
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -166,6 +170,8 @@ public class FormProductActivity extends AppCompatActivity {
         }
     }
 
+
+    //Quando o usuário finalizar a camera, o App voltará para o metodo abaixo
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

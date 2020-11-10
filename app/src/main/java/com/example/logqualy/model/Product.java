@@ -56,4 +56,8 @@ public class Product implements Serializable {
     public void setDescriptionProduct(String descriptionProduct) {
         this.descriptionProduct = descriptionProduct;
     }
+
+    public void setPhotoProduct(String photoProduct) {
+        this.photoProduct = photoProduct;
+    }
 }

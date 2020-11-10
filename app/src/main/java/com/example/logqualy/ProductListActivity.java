@@ -44,9 +44,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ProductListActivity extends AppCompatActivity {
-
     public static final int REQUEST_CODE = 1;
     public static final int REQUEST_EDIT_PRODUCT = 2;
     public static final String PRODUCTS_COLLECTION = "products";
@@ -116,29 +116,18 @@ public class ProductListActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK){
                 Product product = (Product) data.getSerializableExtra(FormProductActivity.PRODUCT_SAVE);
                 byte[] byteArray1 = data.getByteArrayExtra("imagem");
-                Bitmap bmp1 = BitmapFactory.decodeByteArray(byteArray1, 0, byteArray1.length);
 
-                mStorageRef = FirebaseStorage.getInstance().getReference();
+                String nameFile = UUID.randomUUID().toString();
+                product.setPhotoProduct(nameFile);
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bmp1.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] img = baos.toByteArray();
-
-                mStorageRef.child("gs://logqualy-ba3dd.appspot.com/img/"+product.getNameProduct()+".jpg").putBytes(img).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                db.collection(PRODUCTS_COLLECTION).add(product).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getApplicationContext(),"deu certo",Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(),"não deu certo",Toast.LENGTH_SHORT).show();
+                    public void onSuccess(DocumentReference documentReference) {
+                        mStorageRef = FirebaseStorage.getInstance().getReference("image/"+ nameFile+".jpg");
+                        mStorageRef.putBytes(byteArray1);
+                        loadData();
                     }
                 });
-                db.collection(PRODUCTS_COLLECTION).add(product);
-
-
-                loadData();
             }
         }
 

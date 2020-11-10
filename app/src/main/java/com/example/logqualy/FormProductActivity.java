@@ -19,13 +19,19 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.logqualy.model.Product;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.UUID;
 
 public class FormProductActivity extends AppCompatActivity {
 
     public static final String PRODUCT_SAVE = "PRODUCT_SAVE";
     public static final String PRODUCT_EDIT = "PRODUCT_EDIT";
+    public static final String EXTRA_IMAGE_PATH = "imagem";
 
     private EditText mEditTextNameProduct;
     private EditText mEditTextDescriptionProduct;
@@ -35,6 +41,7 @@ public class FormProductActivity extends AppCompatActivity {
     private Intent intent;
     private Product product;
     private byte[] imageInByte;
+    private FirebaseStorage mStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +53,7 @@ public class FormProductActivity extends AppCompatActivity {
 
         loadViews();
         clickButtons();
-
+        mStorage = FirebaseStorage.getInstance();
         intent = getIntent();
 
         if (intent.hasExtra(ProductListActivity.EXTRA_EDIT_PRODUCT)){
@@ -98,11 +105,12 @@ public class FormProductActivity extends AppCompatActivity {
         Intent intent = new Intent(FormProductActivity.this,
                         ProductListActivity.class);
 
-        intent.putExtra("imagem",imageInByte);
+        intent.putExtra(EXTRA_IMAGE_PATH,imageInByte);
         intent.putExtra(saveOrEditExtra, product);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
+
 
     private void updateProductFromForm() {
         String nameProduct = mEditTextNameProduct.getText().toString();
@@ -162,12 +170,21 @@ public class FormProductActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            //Pegando o extra para posterior manipulação
             Bundle extras = data.getExtras();
+
+            //Pegando a imagem que vei da intent
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            //Carregando a imagem na ImageView
             mImageViewPhoto.setImageBitmap(imageBitmap);
+
+            //Transformando a imagem em um arquivo JPGE
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            //Transforando a imagem em um arrandy de bites
             imageInByte = stream.toByteArray();
+
         }
     }
 }

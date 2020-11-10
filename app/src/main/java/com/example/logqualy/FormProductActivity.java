@@ -31,7 +31,7 @@ public class FormProductActivity extends AppCompatActivity {
 
     public static final String PRODUCT_SAVE = "PRODUCT_SAVE";
     public static final String PRODUCT_EDIT = "PRODUCT_EDIT";
-    public static final String EXTRA_IMAGE_PATH = "imagem";
+    public static final String EXTRA_IMAGE_PATH = "image";
 
     private EditText mEditTextNameProduct;
     private EditText mEditTextDescriptionProduct;

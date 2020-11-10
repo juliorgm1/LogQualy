@@ -8,28 +8,14 @@
     android:layout_marginEnd="8dp"
     android:layout_marginBottom="8dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/itemImageViewProduct"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic"
-        app:civ_border_width="2dp"
-        app:civ_border_color="#FF000000"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
-    
     <TextView
         android:id="@+id/itemtextViewProduct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Produto x"
-        app:layout_constraintStart_toEndOf="@+id/itemImageViewProduct"
-        app:layout_constraintTop_toTopOf="@+id/itemImageViewProduct" />
+        app:layout_constraintStart_toEndOf="@+id/imageViewItem"
+        app:layout_constraintTop_toTopOf="@+id/imageViewItem" />
 
     <TextView
         android:id="@+id/itemTextViewDescription"
@@ -47,7 +33,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="15/10/2020"
-        app:layout_constraintBottom_toBottomOf="@+id/itemtextViewProduct"
-        app:layout_constraintEnd_toEndOf="@+id/itemTextViewDescription"
-        app:layout_constraintTop_toTopOf="@+id/itemtextViewProduct" />
+        app:layout_constraintStart_toStartOf="@+id/itemTextViewDescription"
+        app:layout_constraintTop_toBottomOf="@+id/itemTextViewDescription" />
+
+    <ImageView
+        android:id="@+id/imageViewItem"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logotipo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

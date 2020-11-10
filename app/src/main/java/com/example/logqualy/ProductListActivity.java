@@ -115,19 +115,19 @@ public class ProductListActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE && data.hasExtra(FormProductActivity.PRODUCT_SAVE)){
             if (resultCode == Activity.RESULT_OK){
                 Product product = (Product) data.getSerializableExtra(FormProductActivity.PRODUCT_SAVE);
-                byte[] byteArray1 = data.getByteArrayExtra("imagem");
+                byte[] byteArray1 = data.getByteArrayExtra(FormProductActivity.EXTRA_IMAGE_PATH);
 
-                String nameFile = UUID.randomUUID().toString();
-                product.setPhotoProduct(nameFile);
-
-                db.collection(PRODUCTS_COLLECTION).add(product).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                final String nameFile = UUID.randomUUID().toString();
+                mStorageRef = FirebaseStorage.getInstance().getReference().child("image/"+ nameFile);
+                mStorageRef.putBytes(byteArray1).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        mStorageRef = FirebaseStorage.getInstance().getReference("image/"+ nameFile+".jpg");
-                        mStorageRef.putBytes(byteArray1);
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        product.setPhotoProduct(nameFile);
+                        db.collection(PRODUCTS_COLLECTION).add(product);
                         loadData();
                     }
                 });
+
             }
         }
 

@@ -13,12 +13,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.logqualy.FormProductActivity;
 import com.example.logqualy.ProductListActivity;
 import com.example.logqualy.R;
 import com.example.logqualy.model.Product;
 import com.example.logqualy.ui.recyclerview.adapter.listener.ItemClickListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -63,8 +65,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return productList.size();
     }
 
-
-
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         private TextView mTextProduct;
@@ -77,25 +77,41 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             mTextProduct =  itemView.findViewById(R.id.itemtextViewProduct);
             mTextDescription =  itemView.findViewById(R.id.itemTextViewDescription);
             mTextDate =  itemView.findViewById(R.id.itemTextViewData);
-            mImageView = itemView.findViewById(R.id.itemImageViewProduct);
+            mImageView = itemView.findViewById(R.id.imageViewItem);
         }
 
         void mergeViewData(Product product){
             mTextProduct.setText(product.getNameProduct());
             mTextDescription.setText(product.getDescriptionProduct());
             mTextDate.setText(product.getDate());
-            String path = FormProductActivity.EXTRA_IMAGE_PATH + "/";
 
-                StorageReference reference = FirebaseStorage.getInstance().getReference();
-                StorageReference fileRerence = reference.child(path + product.getPhotoProduct() + ".jpg");
-                fileRerence.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Toast.makeText(context,"bytex",Toast.LENGTH_LONG).show();
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        mImageView.setImageBitmap(bitmap);
-                    }
-                });
+            //Para recuperar a imagem é necessário ter uma instancia do storage
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            //aqui estamos pegando o caminho do servidor
+            StorageReference storageRef = storage.getReference();
+
+            //Aqui estamos pegando a referencia do caminho do arquivo
+            StorageReference reference = storageRef
+                    .child("image/"+ product.getPhotoProduct());
+
+            //Essa constante determinará o tamanho maximo do arquivo
+            final long ONE_MEGABYTE = 1024 * 1024;
+
+            //Com a referencia chamamos o metodo getBytes passando o tamanho maximo
+            reference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    //A imagem vem como bytes e precisa ser transformada em bitmap para ser exibida no imageview
+                    Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    //passado a imagem para o imageview
+                    mImageView.setImageBitmap(bmp);
+                }
+            });
+
+
+
+
         }
     }
 
